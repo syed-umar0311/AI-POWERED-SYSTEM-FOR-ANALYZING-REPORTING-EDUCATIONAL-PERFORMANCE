@@ -2,20 +2,22 @@ import React from 'react'
 import '../../styles/Courses.css'
 import Studentsidebar from '../../components/student_sidebar/Studentsidebar';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
-function Attendence() {
-  const courses = [
-    { id: 1, name: 'Introduction to React', instructor: 'John Doe', takesClasses: 8, totalClasses: 10, attendance: 80 },
-    { id: 2, name: 'Advanced JavaScript', instructor: 'Jane Smith', takesClasses: 12, totalClasses: 15, attendance: 80 },
-    { id: 3, name: 'Node.js Fundamentals', instructor: 'Alice Johnson', takesClasses: 10, totalClasses: 12, attendance: 83.33 },
-    { id: 4, name: 'CSS Mastery', instructor: 'Bob Brown', takesClasses: 7, totalClasses: 8, attendance: 87.5 },
-    { id: 5, name: 'Database Design', instructor: 'Charlie Davis', takesClasses: 13, totalClasses: 14, attendance: 92.86 },
-  ];
-
+import { useState, useEffect } from 'react';
+function Attendence({search}) {
+  const [course, setcourse] = useState([]);
+    
+      useEffect(() => {
+        if (search && search["Courses"]) {
+          setcourse(search["Courses"]);
+        }
+      }, [search]);
+    
+      console.log("course", course);
+  
    // Transform data for the pie chart
-   const pieData = courses.map((course) => ({
-    name: course.name,
-    value: course.attendance,
+   const pieData = course.map((course) => ({
+    name: course["Course Name"],
+    value: course["Attendance"],
   }));
 
   // Define colors for each pie slice
@@ -25,16 +27,15 @@ function Attendence() {
     <Studentsidebar />
     <div className="side_overview">
       <h1 className="over">Attendance</h1>
-      <div className="search-container">
+      {/* <div className="search-container">
         <input type="text" placeholder="Search by student ID" className="search-input" />
         <button className="search-button">Search</button>
-      </div>
+      </div> */}
 {/* table */}
       <div className="table-container">
       <table>
         <thead>
           <tr>
-            <th>Course ID</th>
             <th>Course Name</th>
             <th>Instructor Name</th>
             <th>Takes Classes</th>
@@ -43,14 +44,12 @@ function Attendence() {
           </tr>
         </thead>
         <tbody>
-          {courses.map((course) => (
-            <tr key={course.id}>
-              <td>{course.id}</td>
-              <td>{course.name}</td>
-              <td>{course.instructor}</td>
-              <td>{course.takesClasses}</td>
-              <td>{course.totalClasses}</td>
-              <td>{course.attendance}%</td>
+          {course.map((course) => (
+            <tr key={course["Course ID"]}>
+              <td>{course["Course Name"]}</td>
+              <td>{course["Taken Classes"]}</td>
+              <td>{course["Total Classes"]}</td>
+              <td>{course["Attendance"]}%</td>
             </tr>
           ))}
         </tbody>
