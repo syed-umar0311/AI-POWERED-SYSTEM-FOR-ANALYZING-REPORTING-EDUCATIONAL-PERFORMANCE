@@ -1,18 +1,36 @@
 import React, { useState } from "react";
 import "../../styles/Studentoverview.css";
 import Studentsidebar from "../../components/student_sidebar/Studentsidebar";
+import * as XLSX from "xlsx"; // Import XLSX to read Excel
 
 function Overview() {
-  const [file, setFile] = useState(true);
+  const [file, setFile] = useState(null);
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]); // Set selected file
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      readExcel(selectedFile); // Read the file immediately
+    }
   };
 
-  const handleUpload = () => {
-    if (file) {
-      console.log("Uploading:", file.name);
-    }
+  const readExcel = (selectedFile) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(selectedFile);
+
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet);
+
+      console.log("Converted JSON:", json); // ✅ Now this will always be logged
+    };
+
+    reader.onerror = (error) => {
+      console.log("Error reading file:", error);
+    };
   };
 
   return (
@@ -61,13 +79,10 @@ function Overview() {
       ) : (
         <div className="popup-overlay">
           <div className="popup-content">
-            <h2>Upload Student Recode Excel File</h2>
-            <input type="file" accept=".xls,.xlsx" onChange={handleFileChange} />
+            <h2>Upload Student Record Excel File</h2>
+            <input type="file" accept=".xls,.xlsx,.csv" onChange={handleFileChange} />
             <div className="popup-buttons">
-              <button onClick={handleUpload} className="upload-btn">
-                Upload
-              </button>
-
+              <button className="upload-btn">Upload</button>
             </div>
           </div>
         </div>
@@ -77,7 +92,3 @@ function Overview() {
 }
 
 export default Overview;
-
-
-
-
