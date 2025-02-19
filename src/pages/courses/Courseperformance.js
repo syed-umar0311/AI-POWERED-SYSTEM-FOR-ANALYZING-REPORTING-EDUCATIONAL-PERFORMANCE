@@ -2,85 +2,55 @@ import React from 'react'
 import CourseSidebar from '../../components/curse_sidebar/CourseSidebar'
 import "../../styles/Studentoverview.css";
 import "../../styles/Courses.css";
+import { useState, useEffect } from "react";
 
 function Courseperformance() {
-const courses = [
-    {
-        "courseCRN": 12345,
-        "courseName": "Introduction to React",
-        "instructorName": "John Doe",
-        "department": "Computer Science",
-        "classSize": 30,
-        "takesClasses": 24,
-        "totalClasses": 30,
-        "attendanceRate": 80,
-        "completionRate": 85,
-        "averageScore": 78,
-        "studentFeedback": 4.5,
-        "participationLevel": "High",
-        "dropoutRate": 5
-    },
-    {
-        "courseCRN": 67890,
-        "courseName": "Advanced JavaScript",
-        "instructorName": "Jane Smith",
-        "department": "Computer Science",
-        "classSize": 50,
-        "takesClasses": 40,
-        "totalClasses": 50,
-        "attendanceRate": 80,
-        "completionRate": 75,
-        "averageScore": 82,
-        "studentFeedback": 4.2,
-        "participationLevel": "Medium",
-        "dropoutRate": 10
-    },
-    {
-        "courseCRN": 12346,
-        "courseName": "Node.js Fundamentals",
-        "instructorName": "Alice Johnson",
-        "department": "Computer Science",
-        "classSize": 25,
-        "takesClasses": 22,
-        "totalClasses": 25,
-        "attendanceRate": 88,
-        "completionRate": 90,
-        "averageScore": 85,
-        "studentFeedback": 4.7,
-        "participationLevel": "High",
-        "dropoutRate": 4
-    },
-    {
-        "courseCRN": 67891,
-        "courseName": "CSS Mastery",
-        "instructorName": "Bob Brown",
-        "department": "Computer Science",
-        "classSize": 40,
-        "takesClasses": 35,
-        "totalClasses": 40,
-        "attendanceRate": 87.5,
-        "completionRate": 80,
-        "averageScore": 79,
-        "studentFeedback": 4.3,
-        "participationLevel": "Medium",
-        "dropoutRate": 8
-    },
-    {
-        "courseCRN": 12347,
-        "courseName": "Database Design",
-        "instructorName": "Charlie Davis",
-        "department": "Computer Science",
-        "classSize": 35,
-        "takesClasses": 32,
-        "totalClasses": 35,
-        "attendanceRate": 92.86,
-        "completionRate": 95,
-        "averageScore": 88,
-        "studentFeedback": 4.8,
-        "participationLevel": "High",
-        "dropoutRate": 3
+  const [get, setget] = useState([]); // State for filtered course
+  const [getall, setgetall] = useState([]); // State for all courses
+  const [id, setid] = useState(""); // State for search input
+  const [show, setshowall] = useState(false); // State to toggle between filtered and all courses
+
+  // Fetch a specific course by ID
+  const get_selected_course = async (id) => {
+    if (!id) {
+      alert("Please enter a Course ID");
+      return;
     }
-]
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/get_course/${id}`);
+      if (!response.ok) {
+        throw new Error("Course not found");
+      }
+      const data = await response.json();
+      setget(data);
+      setshowall(true); // Show filtered course
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setget([]); // Clear filtered course
+      setshowall(false); // Show all courses
+      alert("Course not found. Please try again.");
+    }
+  };
+  // console.log(get["course_id"]);
+  // Fetch all courses on component mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/get_courses");
+        const data = await response.json();
+        setgetall(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  // Log the filtered course data whenever it changes
+  // useEffect(() => {
+  //   console.log("get data", get);
+  // }, [get]);
 
   return (
     <div className="main_student">
@@ -88,11 +58,12 @@ const courses = [
     <div className="side_overview">
       <h1 className="over">Performance</h1>
       <div className="search-container">
-        <input type="text" placeholder="Search by Course ID" className="search-input" />
-        <button className="search-button">Search</button>
+        <input type="text" placeholder="Search by Course ID" className="search-input" value={id} onChange={(e) => setid(e.target.value.toUpperCase())} />
+        <button className="search-button" onClick={()=>{get_selected_course(id)}}>Search</button>
       </div>
 
       {/* table */}
+      <div className="table-container" style={{ overflowY: "auto" }}>
       <table>
         <thead>
           <tr>
@@ -109,24 +80,39 @@ const courses = [
           </tr>
         </thead>
         <tbody>
-          {courses.map((course) => (
-            <tr key={course.courseCRN}>
-              <td>{course.courseCRN}</td>
-              <td>{course.courseName}</td>
-              <td>{course.instructorName}</td>
-              <td>{course.department}</td>
-              <td>{course.takesClasses}</td>
-              <td>{course.totalClasses}</td>
-              <td>{course.attendanceRate}</td>
-              <td>{course.studentFeedback}</td>
-              <td>{course.participationLevel}</td>
-              <td>{course.dropoutRate}</td>
-            </tr>
-          ))}
+        {show ? (
+                <tr>
+                  <td>{get["course_id"]}</td>
+                  <td>{get["course_name"]}</td>
+                  <td>{get["instructor_name"]}</td>
+                  <td>{get["department_name"]}</td>
+                  <td>{get["taken_classes"]}</td>
+                  <td>{get["total_classes"]}</td>
+                  <td>{get["attendance"]}%</td>
+                  <td>{get["feedback_rate"]}</td>
+                  <td>{get["participation"]}</td>
+                  <td>{get["dropout"]}</td>
+                </tr>
+              ) : (
+                getall.map((course) => (
+                  <tr key={course["course_id"]}>
+                    <td>{course["course_id"]}</td>
+                    <td>{course["course_name"]}</td>
+                    <td>{course["instructor_name"]}</td>
+                    <td>{course["department_name"]}</td>
+                    <td>{course["taken_classes"]}</td>
+                    <td>{course["total_classes"]}%</td>
+                    <td>{course["attendance"]}%</td>
+                    <td>{course["feedback_rate"]}</td>
+                    <td>{course["participation"]}</td>
+                    <td>{course["dropout"]}</td>
+                  </tr>
+                ))
+              )}
         </tbody>
       </table>
 
-     
+      </div>
       </div>
       </div>
 

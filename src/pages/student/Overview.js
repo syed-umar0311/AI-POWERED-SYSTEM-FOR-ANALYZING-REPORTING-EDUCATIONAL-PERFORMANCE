@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 
 
 function Overview({onsearch}) {
-  const [triggerSearch, setTriggerSearch] = useState(false);
+  // const [triggerSearch, setTriggerSearch] = useState(false);
   const [pop, setpop] = useState(false);
   const [students, setStudents] = useState([]); // store json data
   const [file, setFile] = useState(null); // store file
@@ -182,7 +182,7 @@ function Overview({onsearch}) {
                 placeholder="Search by student ID" 
                 className="search-input" 
                 value={students} 
-                onChange={(e) => setStudents(e.target.value)} 
+                onChange={(e) => setStudents(e.target.value.toUpperCase())} 
             />
             <button className="search-button" onClick={() => get_student(students)}>Search</button>
             </div>

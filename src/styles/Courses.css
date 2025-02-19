@@ -1,8 +1,12 @@
 /* Table.css */
 .table-container {
+   max-height: 450px;
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    overflow-y: auto; 
+  overflow-x: auto;
+
   }
   
   table {

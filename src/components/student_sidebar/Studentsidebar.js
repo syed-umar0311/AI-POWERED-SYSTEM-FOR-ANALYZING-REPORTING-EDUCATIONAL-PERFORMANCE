@@ -11,7 +11,7 @@ function Studentsidebar() {
       <li><Link to="/courses">Courses</Link></li>
       <li><Link to="/performance">Performance</Link></li>
       <li><Link to="/attendence">Attendence</Link></li>
-      <li><Link to="/compare">Compare</Link></li>
+      {/* <li><Link to="/compare">Compare</Link></li> */}
       <li><Link to="/report">Report</Link></li>
       <li><Link to="/add">Add Manually</Link></li>
       <li><Link to="/">Back</Link></li>
