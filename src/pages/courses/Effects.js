@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import CourseSidebar from '../../components/curse_sidebar/CourseSidebar';
 import "../../styles/Studentoverview.css";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
-
-function Grade() {
+import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid, LineChart, Line } from "recharts";
+function Effects() {
     const [get, setGet] = useState({}); // Selected course data
     const [id, setId] = useState(""); // Course ID input
-    const [chartData, setChartData] = useState([]); // Data for the grouped bar chart
+    const [chartData, setChartData] = useState([]); // Data for the scatter plot
 
     // Fetch selected course data
     const get_selected_course = async (id) => {
@@ -23,7 +22,7 @@ function Grade() {
             const data = await response.json();
             setGet(data);
 
-            // Prepare data for the grouped bar chart
+            // Prepare data for the scatter plot
             if (data["Section"]) {
                 const formattedData = formatChartData(data["Section"]);
                 setChartData(formattedData);
@@ -36,15 +35,32 @@ function Grade() {
         }
     };
 
-    // Format data for the grouped bar chart
+    // Format data for the scatter plot
     const formatChartData = (sections) => {
         return sections.map((section) => ({
             sectionName: section["Section"],
-            Grade_a: section["Grade_a"] || 0,
-            Grade_b: section["Grade_b"] || 0,
-            Grade_c: section["Grade_c"] || 0,
-            Grade_d: section["Grade_d"] || 0,
+            attendance: parseFloat(section["Attendance"].replace("%", "")), // Convert "96%" to 96
+            averageGrade: calculateAverageGrade(section), // Calculate average grade for the section
         }));
+    };
+
+    // Calculate average grade for a section
+    const calculateAverageGrade = (section) => {
+        const totalStudents = section["Total Students"];
+        const gradeWeights = {
+            Grade_a: 4, // A = 4.0
+            Grade_b: 3, // B = 3.0
+            Grade_c: 2, // C = 2.0
+            Grade_d: 1, // D = 1.0
+        };
+
+        const totalGradePoints =
+            (section["Grade_a"] || 0) * gradeWeights.Grade_a +
+            (section["Grade_b"] || 0) * gradeWeights.Grade_b +
+            (section["Grade_c"] || 0) * gradeWeights.Grade_c +
+            (section["Grade_d"] || 0) * gradeWeights.Grade_d;
+
+        return (totalGradePoints / totalStudents).toFixed(2); // Average grade points
     };
 
     // Clear page data on unload
@@ -77,12 +93,11 @@ function Grade() {
             window.removeEventListener("unload", handleUnload);
         };
     }, []);
-
-    return (
-        <div className="main_student">
+  return (
+    <div className="main_student">
             <CourseSidebar />
             <div className="side_overview">
-                <h1 className="over">Grade</h1>
+                <h1 className="over">Attendance Impact on Grades By Sections</h1>
                 <div className="search-container">
                     <input
                         type="text"
@@ -94,25 +109,41 @@ function Grade() {
                     <button className="search-button" onClick={() => get_selected_course(id)}>Search</button>
                 </div>
 
-                {/* Grouped Bar Chart */}
+                {/* Scatter Plot */}
                 <div className="p-4">
+                    
                     <ResponsiveContainer width="100%" height={400}>
-                        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+                        <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="sectionName" />
-                            <YAxis />
-                            <Tooltip />
+                            <XAxis
+                                type="number"
+                                dataKey="attendance"
+                                name="Attendance (%)"
+                                domain={[0, 100]}
+                                label={{ value: "Attendance (%)", position: "insideBottom", offset: -10 }}
+                            />
+                            <YAxis
+                                type="number"
+                                dataKey="averageGrade"
+                                name="Average Grade"
+                                domain={[0, 4]}
+                                label={{ value: "Average Grade", angle: -90, position: "insideLeft" }}
+                            />
+                            <Tooltip cursor={{ strokeDasharray: "3 3" }} />
                             <Legend />
-                            <Bar dataKey="Grade_a" fill="#8884d8" name="Grade A" />
-                            <Bar dataKey="Grade_b" fill="#82ca9d" name="Grade B" />
-                            <Bar dataKey="Grade_c" fill="#ffc658" name="Grade C" />
-                            <Bar dataKey="Grade_d" fill="#ff8042" name="Grade D" />
-                        </BarChart>
+                            <Scatter
+                                name="Section"
+                                data={chartData}
+                                fill="#8884d8"
+                                shape="circle"
+                                line
+                            />
+                        </ScatterChart>
                     </ResponsiveContainer>
                 </div>
             </div>
         </div>
-    );
+  );
 }
 
-export default Grade;
+export default Effects;

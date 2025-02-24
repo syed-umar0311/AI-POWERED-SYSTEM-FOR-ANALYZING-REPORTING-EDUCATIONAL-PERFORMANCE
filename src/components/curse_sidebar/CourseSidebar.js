@@ -10,7 +10,8 @@ function CourseSidebar() {
       <li><Link to="/section">Sections</Link></li>
       <li><Link to="/courseperformance">Performance</Link></li>
       <li><Link to="/grade">Grade</Link></li>
-      {/* <li><Link to="/coursecompare">Compare</Link></li> */}
+      <li><Link to="/effect">Effects</Link></li>
+      <li><Link to="/coursecompare">Compare</Link></li>
       <li><Link to="/coursereport">Report</Link></li>
       <li><Link to="/">Back</Link></li>
     </ul>

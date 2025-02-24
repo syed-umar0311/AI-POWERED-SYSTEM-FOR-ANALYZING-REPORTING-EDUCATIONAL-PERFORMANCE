@@ -23,6 +23,7 @@ import Need from "./pages/instructor/Need";
 import InstructorSection from "./pages/instructor/InstructorSection";
 import { useState } from "react";
 import Trends from "./pages/student/Trends";
+import Effects from "./pages/courses/Effects";
 function App() {
   const [search, setSearch] = useState(null); // State to store data from child
 
@@ -49,6 +50,7 @@ function App() {
         <Route path="/courseoverview" element={<Course />} />
         <Route path="/insta" element={<Instructor />} />
         <Route path="/section" element={<Section />} />
+        <Route path="/effect" element={<Effects/>}/>
         <Route path="/coursecompare" element={<CourseCompare />} />
         <Route path="/coursereport" element={<CourseReport />} />
         <Route path="/courseperformance" element={<Courseperformance />} />

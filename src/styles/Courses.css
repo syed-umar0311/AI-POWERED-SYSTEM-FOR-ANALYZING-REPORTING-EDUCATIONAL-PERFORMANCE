@@ -39,3 +39,36 @@
     font-family: sans-serif;
     border-bottom: 1px solid #ddd;
   }
+
+
+
+
+
+
+
+
+  /* Flex container for side-by-side charts */
+.charts-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px; /* Space between charts */
+  margin-top: 20px;
+}
+
+/* Individual chart styling */
+.chart {
+  flex: 1; /* Each chart takes equal space */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+  .charts-row {
+    flex-direction: column; /* Stack charts vertically on smaller screens */
+  }
+}
