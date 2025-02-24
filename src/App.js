@@ -22,6 +22,7 @@ import InstructorFeedback from "./pages/instructor/InstructorFeedback";
 import Need from "./pages/instructor/Need";
 import InstructorSection from "./pages/instructor/InstructorSection";
 import { useState } from "react";
+import Trends from "./pages/student/Trends";
 function App() {
   const [search, setSearch] = useState(null); // State to store data from child
 
@@ -43,7 +44,7 @@ function App() {
         <Route path="/compare" element={<Compare search={search} />} />
         <Route path="/report" element={<Report search={search} />} />
         <Route path="/add" element={<Add />} />
-
+        <Route path="/trends" element={<Trends search={search}/>}/>
 
         <Route path="/courseoverview" element={<Course />} />
         <Route path="/insta" element={<Instructor />} />

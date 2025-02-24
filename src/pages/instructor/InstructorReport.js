@@ -11,7 +11,7 @@ function InstructorReport() {
         `http://127.0.0.1:5000/get_instructor/${id}`
       );
       const data = await response.json();
-      setget(data); // Update state with fetched data
+      setget(data); 
       }
      catch (error) {
       console.error("Error fetching data:", error);
@@ -24,18 +24,16 @@ function InstructorReport() {
   const saveInstructorData = async () => {
     try {
       if (!get) {
-        // alert("No data to save!");
         return;
       }
   
-      // console.log("Data being sent to backend:", get); // Log the data
   
       const response = await fetch("http://127.0.0.1:5000/report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(get), // Send the single object
+        body: JSON.stringify(get), 
       });
   
       if (!response.ok) {
@@ -43,16 +41,15 @@ function InstructorReport() {
       }
   
       const result = await response.json();
-      // alert(result.message);
     } catch (error) {
       console.error("Error saving data:", error);
-      alert("Failed to save data. Check the console for more details.");
+      // alert("Failed to save data. Check the console for more details.");
     }
   };
 
   const generateReport = async () => {
     try {
-      // Call the Flask API endpoint
+      
       const response = await fetch('http://127.0.0.1:5000/generate-report', {
         method: 'GET',
       });
@@ -61,7 +58,6 @@ function InstructorReport() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Get the PDF file name from the response
       // const result = await response.json();
       // const pdfFilename = result.pdf_filename;
 
@@ -81,6 +77,36 @@ function InstructorReport() {
   }, [get]);
 
 
+
+  useEffect(() => {
+        let isClosing = false;
+    
+        const handleBeforeUnload = (event) => {
+          isClosing = true;
+        };
+    
+        const handleUnload = () => {
+          if (isClosing) {
+            fetch("http://127.0.0.1:5000/clear", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ action: "clear" }),
+            })
+              .then((response) => response.json())
+              .catch((error) => console.error("Error clearing database:", error));
+          }
+        };
+    
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("unload", handleUnload);
+    
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.removeEventListener("unload", handleUnload);
+        };
+      }, []);
   return (
     <div className="main_student">
       <InstructorSidebar />

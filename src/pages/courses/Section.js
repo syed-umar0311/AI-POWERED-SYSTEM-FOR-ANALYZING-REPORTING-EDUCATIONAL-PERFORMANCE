@@ -3,12 +3,12 @@ import "../../styles/Courses.css";
 import CourseSidebar from "../../components/curse_sidebar/CourseSidebar";
 
 function Section() {
-  const [get, setget] = useState([]); // State for filtered course
-  const [getall, setgetall] = useState([]); // State for all courses
-  const [id, setid] = useState(""); // State for search input
-  const [show, setshowall] = useState(false); // State to toggle between filtered and all courses
+  const [get, setget] = useState([]); 
+  const [getall, setgetall] = useState([]); 
+  const [id, setid] = useState(""); 
+  const [show, setshowall] = useState(false); 
   console.log(getall);
-  // Fetch a specific course by ID
+  
   const get_selected_course = async (id) => {
     if (!id) {
       alert("Please enter a Course ID");
@@ -22,16 +22,15 @@ function Section() {
       }
       const data = await response.json();
       setget(data);
-      setshowall(true); // Show filtered course
+      setshowall(true); 
     } catch (error) {
       console.error("Error fetching data:", error);
-      setget([]); // Clear filtered course
-      setshowall(false); // Show all courses
+      setget([]); 
+      setshowall(false); 
       alert("Course not found. Please try again.");
     }
   };
-  // console.log(get["course_id"]);
-  // Fetch all courses on component mount
+  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -45,11 +44,37 @@ function Section() {
     fetchCourses();
   }, []);
 
-  // Log the filtered course data whenever it changes
-  // useEffect(() => {
-  //   console.log("get data", get);
-  // }, [get]);
+  
 
+  useEffect(() => {
+      let isClosing = false;
+  
+      const handleBeforeUnload = (event) => {
+        isClosing = true;
+      };
+  
+      const handleUnload = () => {
+        if (isClosing) {
+          fetch("http://127.0.0.1:5000/clear_page_data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ action: "clear" }),
+          })
+            .then((response) => response.json())
+            .catch((error) => console.error("Error clearing database:", error));
+        }
+      };
+  
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("unload", handleUnload);
+  
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        window.removeEventListener("unload", handleUnload);
+      };
+    }, []);
   return (
     <div className="main_student">
       <CourseSidebar />

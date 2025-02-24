@@ -82,6 +82,41 @@ function Report() {
           saveInstructorData();
         }
       }, [get]);
+
+
+
+
+      useEffect(() => {
+          let isClosing = false;
+      
+          const handleBeforeUnload = (event) => {
+            // Set a flag to indicate the tab/window is being closed
+            isClosing = true;
+          };
+      
+          const handleUnload = () => {
+            if (isClosing) {
+              // Send a request to clear the database only when the tab/window is closed
+              fetch("http://127.0.0.1:5000/clear_database", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ action: "clear" }),
+              })
+                .then((response) => response.json())
+                .catch((error) => console.error("Error clearing database:", error));
+            }
+          };
+      
+          window.addEventListener("beforeunload", handleBeforeUnload);
+          window.addEventListener("unload", handleUnload);
+      
+          return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            window.removeEventListener("unload", handleUnload);
+          };
+        }, []);
     
    
     return (

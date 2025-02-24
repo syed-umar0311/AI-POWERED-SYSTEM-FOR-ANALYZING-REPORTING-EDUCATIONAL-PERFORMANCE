@@ -11,41 +11,72 @@ import {
 } from "recharts";
 
 function InstructorFeedback() {
-  const [get, setget] = useState({}); // Store the fetched instructor data
+  const [get, setget] = useState({}); 
   const [id, setid] = useState("");
-  const [feedbackData, setFeedbackData] = useState([]); // Store feedback data for the chart
+  const [feedbackData, setFeedbackData] = useState([]); 
 
-  const COLORS = ["#FF5722", "#4CAF50", "#00BCD4"]; // Colors for Bad, Good, Excellent
-
-  // Fetch instructor data based on ID
+  const COLORS = ["#FF5722", "#4CAF50", "#00BCD4"]; 
   const get_selected_insta = async (id) => {
     try {
       const response = await fetch(
         `http://127.0.0.1:5000/get_instructor/${id}`
       );
       const data = await response.json();
-      setget(data); // Update state with fetched data
+      setget(data); 
 
-      // Format feedback data for the chart
       if (data) {
         const feedback = [
           { feedback: "Bad", students: data.BAD || 0 },
           { feedback: "Good", students: data.GOOD || 0 },
           { feedback: "Excellent", students: data.EXCELLENT || 0 },
         ];
-        setFeedbackData(feedback); // Update feedback data state
+        setFeedbackData(feedback); 
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  // Fetch data when component mounts or ID changes
   useEffect(() => {
     if (id) {
       get_selected_insta(id);
     }
   }, [id]);
+
+
+
+
+
+
+  useEffect(() => {
+        let isClosing = false;
+    
+        const handleBeforeUnload = (event) => {
+          isClosing = true;
+        };
+    
+        const handleUnload = () => {
+          if (isClosing) {
+            fetch("http://127.0.0.1:5000/clear", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ action: "clear" }),
+            })
+              .then((response) => response.json())
+              .catch((error) => console.error("Error clearing database:", error));
+          }
+        };
+    
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("unload", handleUnload);
+    
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.removeEventListener("unload", handleUnload);
+        };
+      }, []);
 
   return (
     <div className="main_student">
@@ -68,7 +99,6 @@ function InstructorFeedback() {
           </button>
         </div>
 
-        {/* Display feedback data in a PieChart */}
         <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie

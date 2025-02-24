@@ -3,15 +3,13 @@ import "../../styles/Studentoverview.css";
 import Studentsidebar from "../../components/student_sidebar/Studentsidebar";
 import * as XLSX from "xlsx";
 
-
-function Overview({onsearch}) {
+function Overview({ onsearch }) {
   // const [triggerSearch, setTriggerSearch] = useState(false);
   const [pop, setpop] = useState(false);
   const [students, setStudents] = useState([]); // store json data
   const [file, setFile] = useState(null); // store file
   const [showPopup, setShowPopup] = useState(false); // show popup
   const [search, setSearch] = useState(null); // search student
-
 
   useEffect(() => {
     onsearch(search);
@@ -28,26 +26,28 @@ function Overview({onsearch}) {
   };
   // ************************************************************************************************
   // get student
-  const get_student = async (studentId) => { 
+  const get_student = async (studentId) => {
     try {
-        const response = await fetch(`http://127.0.0.1:5000/get_student/${studentId}`);
-        const data = await response.json();
-        setSearch(data); // Update state
+      const response = await fetch(
+        `http://127.0.0.1:5000/get_student/${studentId}`
+      );
+      const data = await response.json();
+      setSearch(data); // Update state
     } catch (error) {
-        console.error("Error fetching data:", error);
+      console.error("Error fetching data:", error);
     }
-};
+  };
 
-// Monitor `search` updates
-// useEffect(() => {
-//     if (search) {
-//         console.log("done", search);
-//     }
-// }, [search]);
+  // Monitor `search` updates
+  // useEffect(() => {
+  //     if (search) {
+  //         console.log("done", search);
+  //     }
+  // }, [search]);
 
   // ****************************************************************************************
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/get_students")  // Fetch data from Flask backend
+    fetch("http://127.0.0.1:5000/get_students") // Fetch data from Flask backend
       .then((response) => response.json())
       .then((data) => {
         setpop(data);
@@ -133,9 +133,11 @@ function Overview({onsearch}) {
           "Taken Classes": row["Taken Classes"],
           "Total Classes": row["Total Classes"],
           "Assignment Marks": row["Assignment Marks"],
+          "Grade": row["Grade"],
           Attendance: row["Attendance"],
           Progress: row["Progress"],
           Prediction: row["Prediction"],
+          Grade: row["Grade"],
         });
       });
 
@@ -162,7 +164,7 @@ function Overview({onsearch}) {
       });
 
       const result = await response.json();
-      // console.log("Response from backend:", result);
+      console.log("Response from backend:", result);
       setShowPopup(false); // Hide popup after successful upload
     } catch (error) {
       console.error("Error sending data:", error);
@@ -177,46 +179,52 @@ function Overview({onsearch}) {
           <div className="side_overview">
             <h1 className="over">Overview</h1>
             <div className="search-container">
-            <input 
-                type="text" 
-                placeholder="Search by student ID" 
-                className="search-input" 
-                value={students} 
-                onChange={(e) => setStudents(e.target.value.toUpperCase())} 
-            />
-            <button className="search-button" onClick={() => get_student(students)}>Search</button>
+              <input
+                type="text"
+                placeholder="Search by student ID"
+                className="search-input"
+                value={students}
+                onChange={(e) => setStudents(e.target.value.toUpperCase())}
+              />
+              <button
+                className="search-button"
+                onClick={() => get_student(students)}
+              >
+                Search
+              </button>
             </div>
             {search && (
-            <div className="over_options">
-              <div className="opt">
-                <h2 className="opt_h2">Name:</h2>
-                <h2 className="opt_h2">{search["Student Name"]}</h2>
+              <div className="over_options">
+                <div className="opt">
+                  <h2 className="opt_h2">Name:</h2>
+                  <h2 className="opt_h2">{search["Student Name"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Gender:</h2>
+                  <h2 className="opt_h2">{search["Gender"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Semester:</h2>
+                  <h2 className="opt_h2">{search["Semester"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Department:</h2>
+                  <h2 className="opt_h2">{search["Department"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Courses:</h2>
+                  <h2 className="opt_h2">{search["Total Courses"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Current GPA:</h2>
+                  <h2 className="opt_h2">{search["Current GPA"]}</h2>
+                </div>
+                <div className="opt">
+                  <h2 className="opt_h2">Progress:</h2>
+                  <h2 className="opt_h2">{search["progress"]}</h2>
+                </div>
               </div>
-              <div className="opt">
-                <h2 className="opt_h2">Gender:</h2>
-                <h2 className="opt_h2">{search["Gender"]}</h2>
-              </div>
-              <div className="opt">
-                <h2 className="opt_h2">Semester:</h2>
-                <h2 className="opt_h2">{search["Semester"]}</h2>
-              </div>
-              <div className="opt">
-                <h2 className="opt_h2">Department:</h2>
-                <h2 className="opt_h2">{search["Department"]}</h2>
-              </div>
-              <div className="opt">
-                <h2 className="opt_h2">Courses:</h2>
-                <h2 className="opt_h2">{search["Total Courses"]}</h2>
-              </div>
-              <div className="opt">
-                <h2 className="opt_h2">Current GPA:</h2>
-                <h2 className="opt_h2">{search["Current GPA"]}</h2>
-              </div>
-              <div className="opt">
-                <h2 className="opt_h2">Progress:</h2>
-                <h2 className="opt_h2">{search["progress"]}</h2>
-              </div>
-            </div>)}
+            )}
           </div>
         </div>
       ) : (

@@ -3,10 +3,10 @@ import "../../styles/Courses.css";
 import InstructorSidebar from "../../components/instructor_sidebar/InstructorSidebar";
 import { useState, useEffect } from "react";
 function InstructorPerformance() {
-  const [get, setget] = useState([]); // State for filtered course
-  const [id, setid] = useState(""); // State for search input
-  const [getall, setgetall] = useState([]); // State for all courses
-  const [show, setshowall] = useState(false); // State to toggle between filtered and all courses
+  const [get, setget] = useState([]); 
+  const [id, setid] = useState(""); 
+  const [getall, setgetall] = useState([]); 
+  const [show, setshowall] = useState(false); 
 
   const get_selected_insta = async (id) => {
     try {
@@ -14,7 +14,7 @@ function InstructorPerformance() {
         `http://127.0.0.1:5000/get_instructor/${id}`
       );
       const data = await response.json();
-      setget(data); // Update state
+      setget(data); 
       setshowall(true)
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -33,6 +33,38 @@ function InstructorPerformance() {
     };
     fetchCourses();
   }, []);
+
+
+
+  useEffect(() => {
+        let isClosing = false;
+    
+        const handleBeforeUnload = (event) => {
+          isClosing = true;
+        };
+    
+        const handleUnload = () => {
+          if (isClosing) {
+            fetch("http://127.0.0.1:5000/clear", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ action: "clear" }),
+            })
+              .then((response) => response.json())
+              .catch((error) => console.error("Error clearing database:", error));
+          }
+        };
+    
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("unload", handleUnload);
+    
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.removeEventListener("unload", handleUnload);
+        };
+      }, []);
   return (
     <div className="main_student">
       <InstructorSidebar />

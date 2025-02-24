@@ -14,7 +14,7 @@ function CourseReport() {
             `http://127.0.0.1:5000/get_course/${id}`
           );
           const data = await response.json();
-          setget(data); // Update state with fetched data
+          setget(data); 
           }
          catch (error) {
           console.error("Error fetching data:", error);
@@ -27,18 +27,18 @@ function CourseReport() {
       const saveInstructorData = async () => {
         try {
           if (!get) {
-            // alert("No data to save!");
+            
             return;
           }
       
-          // console.log("Data being sent to backend:", get); // Log the data
+         
       
           const response = await fetch("http://127.0.0.1:5000/report", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(get), // Send the single object
+            body: JSON.stringify(get),
           });
       
           if (!response.ok) {
@@ -46,16 +46,16 @@ function CourseReport() {
           }
       
           const result = await response.json();
-          // alert(result.message);
+         
         } catch (error) {
           console.error("Error saving data:", error);
-          // alert("Failed to save data. Check the console for more details.");
+         
         }
       };
     
       const generateReport = async () => {
         try {
-          // Call the Flask API endpoint
+          
           const response = await fetch('http://127.0.0.1:5000/generate-report', {
             method: 'GET',
           });
@@ -64,12 +64,7 @@ function CourseReport() {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
     
-          // Get the PDF file name from the response
-          // const result = await response.json();
-          // const pdfFilename = result.pdf_filename;
-    
-          // Open the PDF in a new tab
-          // window.open(`http://127.0.0.1:5000/static/${pdfFilename}`, '_blank');
+          
         } catch (error) {
           console.error('Error generating report:', error);
         }
@@ -83,6 +78,37 @@ function CourseReport() {
         }
       }, [get]);
     
+
+
+      useEffect(() => {
+          let isClosing = false;
+      
+          const handleBeforeUnload = (event) => {
+            isClosing = true;
+          };
+      
+          const handleUnload = () => {
+            if (isClosing) {
+              fetch("http://127.0.0.1:5000/clear_page_data", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ action: "clear" }),
+              })
+                .then((response) => response.json())
+                .catch((error) => console.error("Error clearing database:", error));
+            }
+          };
+      
+          window.addEventListener("beforeunload", handleBeforeUnload);
+          window.addEventListener("unload", handleUnload);
+      
+          return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            window.removeEventListener("unload", handleUnload);
+          };
+        }, []);
   return (
     <div className="main_student">
       <CourseSidebar />

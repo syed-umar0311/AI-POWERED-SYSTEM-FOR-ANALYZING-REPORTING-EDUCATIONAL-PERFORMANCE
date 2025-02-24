@@ -34,6 +34,40 @@ function Need() {
     fetchCourses();
   }, []);
 
+
+
+
+
+  useEffect(() => {
+        let isClosing = false;
+    
+        const handleBeforeUnload = (event) => {
+          isClosing = true;
+        };
+    
+        const handleUnload = () => {
+          if (isClosing) {
+            fetch("http://127.0.0.1:5000/clear", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ action: "clear" }),
+            })
+              .then((response) => response.json())
+              .catch((error) => console.error("Error clearing database:", error));
+          }
+        };
+    
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("unload", handleUnload);
+    
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+          window.removeEventListener("unload", handleUnload);
+        };
+      }, []);
+
   return (
     <div className="main_student">
       <InstructorSidebar />
@@ -83,7 +117,7 @@ function Need() {
                     <td>{course["INSTRUCTOR NAME"]}</td>
                     <td>{course["QUALITY"]}</td>
                     <td>{course["NEED"]}</td>
-                    <td>{course["STUDENTS FEEDBACK"]}</td>
+                    <td>{course["STUDENT FEEDBACK"]}</td>
                   </tr>
                 ))
               )}
