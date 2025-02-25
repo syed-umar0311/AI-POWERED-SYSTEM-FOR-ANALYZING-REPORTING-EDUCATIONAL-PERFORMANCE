@@ -82,7 +82,7 @@ function Grade() {
         <div className="main_student">
             <CourseSidebar />
             <div className="side_overview">
-                <h1 className="over">Grade</h1>
+                <h1 className="over">Section Grades</h1>
                 <div className="search-container">
                     <input
                         type="text"

@@ -10,7 +10,7 @@ function Studentsidebar() {
       <li><Link to="/overview">Overview</Link></li>
       <li><Link to="/courses">Courses</Link></li>
       <li><Link to="/performance">Performance</Link></li>
-      <li><Link to="/trends">Trends</Link></li>
+      {/* <li><Link to="/trends">Trends</Link></li> */}
       <li><Link to="/attendence">Scatter Plot</Link></li>
       <li><Link to="/compare">Compare</Link></li>
       <li><Link to="/report">Report</Link></li>

@@ -130,6 +130,7 @@ function Overview({ onsearch }) {
           "Course ID": row["Course ID"],
           "Course Name": row["Course Name"],
           "Instructor Name": row["Instructor Name"],
+          "INSTRUCTOR ID": row["INSTRUCTOR ID"],
           "Taken Classes": row["Taken Classes"],
           "Total Classes": row["Total Classes"],
           "Assignment Marks": row["Assignment Marks"],

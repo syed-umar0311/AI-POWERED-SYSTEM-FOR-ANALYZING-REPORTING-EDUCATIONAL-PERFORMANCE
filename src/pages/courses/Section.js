@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/Courses.css";
 import CourseSidebar from "../../components/curse_sidebar/CourseSidebar";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell } from "recharts"; // Using Recharts for charts
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts"; // Using Recharts for charts
 
 function Section() {
   const [get, setget] = useState([]); // Selected course data
@@ -119,10 +129,9 @@ function Section() {
               <tr>
                 <th>Course ID</th>
                 <th>Course Name</th>
-                <th>Instructor Name</th>
+                <th>Total Sections</th>
                 <th>Department Name</th>
-                <th>Class Size</th>
-                <th>Attendance (%)</th>
+                <th>Credit Hours</th>
               </tr>
             </thead>
             <tbody>
@@ -130,20 +139,18 @@ function Section() {
                 <tr>
                   <td>{get["Course ID"]}</td>
                   <td>{get["Course Name"]}</td>
-                  <td>{get["Section"]?.[0]?.["Instructor Name"]}</td>
+                  <td>{get["Section"]?.length}</td>
                   <td>{get["Section"]?.[0]?.["Department"]}</td>
-                  <td>{get["Section"]?.[0]?.["Total Students"]}</td>
-                  <td>{get["Section"]?.[0]?.["Attendance"]}</td>
+                  <td>{get["Section"]?.[0]?.["credit_hours"]}</td>
                 </tr>
               ) : (
                 getall.map((course) => (
                   <tr key={course["Course ID"]}>
                     <td>{course["Course ID"]}</td>
                     <td>{course["Course Name"]}</td>
-                    <td>{course["Section"]?.[0]?.["Instructor Name"]}</td>
+                    <td>{course["Section"]?.length}</td>
                     <td>{course["Section"]?.[0]?.["Department"]}</td>
-                    <td>{course["Section"]?.[0]?.["Total Students"]}</td>
-                    <td>{course["Section"]?.[0]?.["Attendance"]}</td>
+                    <td>{course["Section"]?.[0]?.["credit_hours"]}</td>
                   </tr>
                 ))
               )}
@@ -159,7 +166,11 @@ function Section() {
               {/* Bar Chart for Attendance */}
               <div className="chart">
                 <h3>Attendance by Section</h3>
-                <BarChart width={400} height={300} data={prepareChartData(get["Section"])}>
+                <BarChart
+                  width={400}
+                  height={300}
+                  data={prepareChartData(get["Section"])}
+                >
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
@@ -183,7 +194,10 @@ function Section() {
                     label
                   >
                     {prepareChartData(get["Section"]).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />

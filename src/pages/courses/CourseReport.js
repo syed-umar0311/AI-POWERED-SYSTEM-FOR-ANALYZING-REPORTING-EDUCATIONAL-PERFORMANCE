@@ -118,7 +118,7 @@ function CourseReport() {
           <input type="text" placeholder="Search by Course ID" className="search-input" value={id} onChange={(e)=>setid(e.target.value.toUpperCase())}/>
           <button className="search-button" onClick={ async () => {await get_selected_insta(id); await saveInstructorData(); }}>Search</button>
         </div>
-        {get&&(<h1>Course Name : {get["course_name"]}</h1>)}
+        {get&&(<h1>Course Name : {get["Course Name"]}</h1>)}
 
         {/* report */}
         <div style={{ padding: 20 }}>

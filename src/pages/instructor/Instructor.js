@@ -37,40 +37,78 @@ function Instructor() {
       alert('Please upload a file first.');
       return;
     }
-
+  
     const reader = new FileReader();
     reader.onload = async (e) => {
       const data = e.target.result;
       const workbook = XLSX.read(data, { type: 'binary' });
       const sheetName = workbook.SheetNames[0]; 
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet); 
-      setJsonData(jsonData);
-
+      const rawData = XLSX.utils.sheet_to_json(worksheet); 
+  
+      // Process data into the required JSON structure
+      const instructorMap = {};
+  
+      rawData.forEach(row => {
+        const instructorId = row["INSTRUCTOR ID"];
+        const instructorName = row["INSTRUCTOR NAME"];
+  
+        if (!instructorMap[instructorId]) {
+          instructorMap[instructorId] = {
+            "INSTRUCTOR ID": instructorId,
+            "INSTRUCTOR NAME": instructorName,
+            "Courses": []
+          };
+        }
+  
+        instructorMap[instructorId]["Courses"].push({
+          "ATTENDANCE": row["ATTENDANCE"],
+          "COURSE ID": row["COURSE ID"],
+          "COURSE NAME": row["COURSE NAME"],
+          "CREDIT HOURS": row["CREDIT HOURS"],
+          "DEPARTMENT": row["DEPARTMENT"],
+          "PROGRESS": row["PROGRESS"],
+          "SECTION": row["SECTION"],
+          "STUDENT FEEDBACK": row["STUDENT FEEDBACK"],
+          "TOTAL STUDENTS": row["TOTAL STUDENTS"],
+          "BAD": row["BAD"],
+          "GOOD": row["GOOD"],
+          "EXCELLENT": row["EXCELLENT"],
+          "NEED": row["NEED"],
+          "QUALITY": row["QUALITY"],
+          "TERM": row["TERM"]
+        });
+      });
+  
+      // Convert instructorMap to an array of instructors
+      const formattedData = Object.values(instructorMap);
+      setJsonData(formattedData);
+  
       try {
         const response = await fetch('http://127.0.0.1:5000/add_instructor', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(jsonData), 
+          body: JSON.stringify(formattedData),
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to upload data');
         }
-
+  
         const result = await response.json();
-        alert(result.message); 
-        setShowPopup(false); 
+        alert(result.message);
+        setShowPopup(false);
       } catch (error) {
         console.error('Error uploading data:', error);
         alert('Failed to upload data. Please try again.');
       }
     };
-
-    reader.readAsBinaryString(file); 
+  
+    reader.readAsBinaryString(file);
   };
+  
 
   const get_selected_insta = async (id) => {
     try {
@@ -161,27 +199,27 @@ function Instructor() {
           </div>
           <div className="opt">
             <h2 className="opt_h2">Teaching Courses</h2>
-            <h2 className="opt_h2">{get["COURSE NAME"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.length}</h2>
           </div>
           <div className="opt">
             <h2 className="opt_h2">Departments:</h2>
-            <h2 className="opt_h2">{get["DEPARTMENT"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.[0]?.["DEPARTMENT"]}</h2>
           </div>
           <div className="opt">
             <h2 className="opt_h2">Total Students</h2>
-            <h2 className="opt_h2">{get["TOTAL STUDENTS"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.[0]?.["TOTAL STUDENTS"]}</h2>
           </div>
           <div className="opt">
             <h2 className="opt_h2">Credit Hours:</h2>
-            <h2 className="opt_h2">{get["CREDIT HOURS"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.[0]?.["CREDIT HOURS"]}</h2>
           </div>
           <div className="opt">
             <h2 className="opt_h2">Attendance</h2>
-            <h2 className="opt_h2">{get["ATTENDANCE"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.[0]?.["ATTENDANCE"]}</h2>
           </div>
           <div className="opt">
             <h2 className="opt_h2">Progress:</h2>
-            <h2 className="opt_h2">{get["PROGRESS"]}</h2>
+            <h2 className="opt_h2">{get?.Courses?.[0]?.["PROGRESS"]}</h2>
           </div>
         </div>
       </div>
